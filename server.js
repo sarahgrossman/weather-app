@@ -16,10 +16,6 @@ app.listen(port, () => {
   console.log('App listening on port 4000')
 })
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, "/static/index.html"))
-})
-
 app.use(function (err, req, res, next) {
   console.error(err)
   console.error(err.stack)
