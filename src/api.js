@@ -1,5 +1,5 @@
 const API_ORIGIN = 'api.openweathermap.org/data/2.5/forecast'
-const API_KEY = process.env.API_KEY
+const API_KEY = // your API key here
 
 export function getWeatherByCity (cityName) {
   return fetch(`http://${API_ORIGIN}?q=${cityName},us&APPID=${API_KEY}`)

@@ -52,7 +52,6 @@ export default class Weather extends Component {
     }
   }
 
-
   render () {
     let form
     if (this.state.dropdownType === 'City name') {
@@ -98,4 +97,3 @@ export default class Weather extends Component {
     )
   }
 }
-
