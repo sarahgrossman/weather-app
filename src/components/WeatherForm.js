@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import CityInput from './CityInput'
 import CoordinatesInput from './CoordinatesInput'
 import { getWeatherByCity, getWeatherByCoordinates } from '../api'
+import { formatWeatherData } from '../utils/general'
 
 const searchOptions = ['Latitude and longitude', 'City name']
 
@@ -35,21 +36,28 @@ export default class Weather extends Component {
 
     const { latitude, longitude, cityName} = this.state
 
-    if (this.state.dropdownType === 'City name') {
-      getWeatherByCity(cityName)
-        .then(res => res.json())
-        .then(({ list }) => {
-          if (list) this.setState({ weatherData: list })
-          else alert('There was an error processing your request. Please try again')
-        })
-    } else {
-      getWeatherByCoordinates(latitude, longitude)
-        .then(res => res.json())
-        .then(({ list }) => {
-          if (list) this.setState({ weatherData: list })
-          else alert('There was an error processing your request. Please try again')
-        })
-    }
+    const apiCall = this.state.dropdownType === 'City name'
+      ? getWeatherByCity
+      : getWeatherByCoordinates
+
+    const apiArgs = this.state.dropdownType === 'City name'
+      ? [cityName]
+      : [latitude, longitude]
+
+    apiCall(...apiArgs)
+      .then(res => res.json())
+      .then(({ list }) => {
+        if (list) {
+          const weatherData = list.map(dataPoint => {
+            if (dataPoint.main) return formatWeatherData(dataPoint)
+          })
+          this.setState({ weatherData })
+        } else {
+          // eslint-disable-next-line no-alert
+          alert('There was an error processing    your request. Please try again')
+        }
+      })
+      .catch(err => console.log(err))
   }
 
   render () {
@@ -62,8 +70,8 @@ export default class Weather extends Component {
 
     return (
       <div>
-        <h1 style={{'textAlign': 'center', 'margin': '30px 0'}}>Welcome to weatherly!</h1>
-        <div style={{'display': 'flex', 'flexDirection': 'column', 'alignItems': 'center'}}>
+        <h1 style={{textAlign: 'center', margin: '30px 0'}}>Welcome to weatherly!</h1>
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           <select onChange={this.setDropdownType}>
             {!this.state.dropdownType && <option>Choose a search type</option>}
             {searchOptions.map(option => (
@@ -74,20 +82,21 @@ export default class Weather extends Component {
           <form>
             {form}
             <button
-              style={{'marginTop': '30px'}}
-              type='submit'
-              onClick={this.handleSubmit}>Let's go</button>
+              style={{marginTop: '30px'}}
+              type="submit"
+              onClick={this.handleSubmit}>Let's go
+            </button>
           </form>
           <div>
             {!!this.state.weatherData.length && (
-              <div style={{'width': '100%', 'marginTop': '30px'}}>
+              <div style={{width: '100%', marginTop: '30px'}}>
                 <div>
-                  <p>Temperature: {this.state.weatherData[0].main.temp}</p>
+                  <p>Temperature: {this.state.weatherData[0].temp}</p>
                 </div>
                 <div>
-                  <p>Humidity: {this.state.weatherData[0].main.humidity}</p>
+                  <p>Humidity: {this.state.weatherData[0].humidity}</p>
                 </div>
-                  <p>Pressure: {this.state.weatherData[0].main.pressure}</p>
+                  <p>Pressure: {this.state.weatherData[0].pressure}</p>
               </div>
             )}
           </div>
