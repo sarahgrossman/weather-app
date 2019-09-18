@@ -1,9 +1,13 @@
 import React from 'react'
 import WeatherForm from './WeatherForm'
+import Header from './Header'
 
 function App () {
   return (
-    <WeatherForm />
+    <div>
+      <Header />
+      <WeatherForm />
+    </div>
   )
 }
 
